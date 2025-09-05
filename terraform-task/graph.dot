@@ -1,0 +1,52 @@
+digraph G {
+  rankdir = "RL";
+  node [shape = rect, fontname = "sans-serif"];
+  subgraph "cluster_module.compute" {
+    label = "module.compute"
+    fontname = "sans-serif"
+    "module.compute.openstack_blockstorage_volume_v3.root_volumes" [label="openstack_blockstorage_volume_v3.root_volumes"];
+    "module.compute.openstack_compute_instance_v2.instances" [label="openstack_compute_instance_v2.instances"];
+    "module.compute.openstack_networking_floatingip_associate_v2.fip_assoc" [label="openstack_networking_floatingip_associate_v2.fip_assoc"];
+    "module.compute.openstack_networking_floatingip_v2.fips" [label="openstack_networking_floatingip_v2.fips"];
+    "module.compute.openstack_networking_port_v2.ports" [label="openstack_networking_port_v2.ports"];
+  }
+  subgraph "cluster_module.loadbalancer" {
+    label = "module.loadbalancer"
+    fontname = "sans-serif"
+    "module.loadbalancer.openstack_lb_listener_v2.this" [label="openstack_lb_listener_v2.this"];
+    "module.loadbalancer.openstack_lb_loadbalancer_v2.this" [label="openstack_lb_loadbalancer_v2.this"];
+    "module.loadbalancer.openstack_lb_member_v2.members" [label="openstack_lb_member_v2.members"];
+    "module.loadbalancer.openstack_lb_monitor_v2.this" [label="openstack_lb_monitor_v2.this"];
+    "module.loadbalancer.openstack_lb_pool_v2.this" [label="openstack_lb_pool_v2.this"];
+  }
+  subgraph "cluster_module.network" {
+    label = "module.network"
+    fontname = "sans-serif"
+    "module.network.openstack_networking_network_v2.this" [label="openstack_networking_network_v2.this"];
+    "module.network.openstack_networking_router_interface_v2.this" [label="openstack_networking_router_interface_v2.this"];
+    "module.network.openstack_networking_router_v2.this" [label="openstack_networking_router_v2.this"];
+    "module.network.openstack_networking_subnet_v2.this" [label="openstack_networking_subnet_v2.this"];
+  }
+  subgraph "cluster_module.security" {
+    label = "module.security"
+    fontname = "sans-serif"
+    "module.security.openstack_networking_secgroup_rule_v2.this" [label="openstack_networking_secgroup_rule_v2.this"];
+    "module.security.openstack_networking_secgroup_v2.this" [label="openstack_networking_secgroup_v2.this"];
+  }
+  "module.compute.openstack_compute_instance_v2.instances" -> "module.compute.openstack_blockstorage_volume_v3.root_volumes";
+  "module.compute.openstack_compute_instance_v2.instances" -> "module.compute.openstack_networking_port_v2.ports";
+  "module.compute.openstack_networking_floatingip_associate_v2.fip_assoc" -> "module.compute.openstack_networking_floatingip_v2.fips";
+  "module.compute.openstack_networking_floatingip_associate_v2.fip_assoc" -> "module.compute.openstack_networking_port_v2.ports";
+  "module.compute.openstack_networking_port_v2.ports" -> "module.network.openstack_networking_network_v2.this";
+  "module.compute.openstack_networking_port_v2.ports" -> "module.security.openstack_networking_secgroup_v2.this";
+  "module.loadbalancer.openstack_lb_listener_v2.this" -> "module.loadbalancer.openstack_lb_loadbalancer_v2.this";
+  "module.loadbalancer.openstack_lb_loadbalancer_v2.this" -> "module.network.openstack_networking_subnet_v2.this";
+  "module.loadbalancer.openstack_lb_member_v2.members" -> "module.compute.openstack_compute_instance_v2.instances";
+  "module.loadbalancer.openstack_lb_member_v2.members" -> "module.loadbalancer.openstack_lb_pool_v2.this";
+  "module.loadbalancer.openstack_lb_monitor_v2.this" -> "module.loadbalancer.openstack_lb_pool_v2.this";
+  "module.loadbalancer.openstack_lb_pool_v2.this" -> "module.loadbalancer.openstack_lb_listener_v2.this";
+  "module.network.openstack_networking_router_interface_v2.this" -> "module.network.openstack_networking_router_v2.this";
+  "module.network.openstack_networking_router_interface_v2.this" -> "module.network.openstack_networking_subnet_v2.this";
+  "module.network.openstack_networking_subnet_v2.this" -> "module.network.openstack_networking_network_v2.this";
+  "module.security.openstack_networking_secgroup_rule_v2.this" -> "module.security.openstack_networking_secgroup_v2.this";
+}
